@@ -1,4 +1,0 @@
-gpio.c:3:6:MX_GPIO_Init	48	static
-gpio.c:29:6:DAC_GPIO_Init	40	static
-gpio.c:42:6:DAC_GPIO_DeInit	32	static
-gpio.c:50:15:Get_btn_state	8	static

@@ -1,2 +1,0 @@
-adc.c:6:20:Get_ptr_hadc1	0	static
-adc.c:10:6:MX_ADC1_Init	24	static

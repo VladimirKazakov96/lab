@@ -1,2 +1,0 @@
-usart.c:6:21:Get_ptr_huart1	0	static
-usart.c:10:6:MX_USART1_UART_Init	8	static

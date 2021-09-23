@@ -22,3 +22,16 @@ uint8_t* USART_TransmitReceive(UART_HandleTypeDef *huart, uint8_t *pData, uint16
 
 	return rx_mass;
 }
+
+void USART_TransmitByPress(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+	GPIO_PinState cur_btn_state = Get_btn_state();
+	static uint8_t is_send = 0;
+	if (cur_btn_state == GPIO_PIN_SET){
+		if (!is_send){
+			HAL_UART_Transmit_IT(huart, data, size);
+				is_send = 1;
+
+		}
+	}else
+		is_send = 0;
+}

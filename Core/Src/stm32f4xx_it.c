@@ -43,7 +43,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -182,9 +182,20 @@ void PendSV_Handler(void)
 /**
   * @brief This function handles System tick timer.
   */
+
+
+uint8_t clear_mas = 0;
+
+uint8_t Get_clear_mas_state(){
+	return clear_mas;
+}
+void Set_clear_mas_flag(uint8_t state){
+	clear_mas = state;
+}
 void SysTick_Handler(void)
 {
   static uint16_t ms_cntr = 0;
+  static uint16_t ms_cntr2 = 0;
   /* USER CODE BEGIN SysTick_IRQn 0 */
 
   /* USER CODE END SysTick_IRQn 0 */
@@ -194,7 +205,23 @@ void SysTick_Handler(void)
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	  ms_cntr = 0;
   }
+  if (ms_cntr2++ == 5000){
+	  clear_mas = 1;
+	  ms_cntr2 = 0;
+  }
+
   /* USER CODE END SysTick_IRQn 1 */
+}
+
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
 }
 
 /******************************************************************************/

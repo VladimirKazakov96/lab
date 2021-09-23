@@ -57,7 +57,7 @@ GPIO_PinState Get_btn_state(){
 			is_btn_pushed = 1;
 		}
 	if (is_btn_pushed)
-		if ((HAL_GetTick() > btn_on_tick + 15)){
+		if ((HAL_GetTick() > btn_on_tick + 10)){
 			if (HAL_GPIO_ReadPin(BTN_Port, BTN_Pin) == GPIO_PIN_SET)
 				btn_state = GPIO_PIN_SET;
 			else

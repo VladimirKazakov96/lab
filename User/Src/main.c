@@ -22,7 +22,9 @@ void Set_value_btn_state (GPIO_PinState b_s){
 }
 
 uint8_t tx[]="Hello from STM32";
-uint8_t* ptr_rx;
+uint8_t rx[17];
+volatile uint8_t* ptr_rx;
+
 int main(void){
 
   HAL_Init();
@@ -39,10 +41,19 @@ int main(void){
 
   while (1)
   {
-	 // Set_value_btn_state(Get_btn_state());
+	  //Set_value_btn_state(Get_btn_state());
 	 // adc_val = Measure_voltage();
 	 // Increase_dac_volt_by_btn();
-	  ptr_rx = USART_TransmitReceive(ptr_huart1, tx, sizeof(tx), 1);
+	 // ptr_rx = USART_TransmitReceive(ptr_huart1, tx, sizeof(tx), 1);
+	  USART_TransmitByPress(ptr_huart1, tx, sizeof(tx));
+
+	  HAL_UART_Receive_IT(ptr_huart1, rx, sizeof(rx));
+	  //HAL_UART_RxCpltCallback
+	  if (Get_clear_mas_state()){
+		  for (uint8_t i=0; i<17; i++)
+			  rx[i]=0;
+		  Set_clear_mas_flag(0);
+	  }
 
   }
 }

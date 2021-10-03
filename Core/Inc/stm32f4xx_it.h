@@ -57,6 +57,9 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 void USART1_IRQHandler(void);
+void TIM6_DAC_IRQHandler(void);
+void Reset_flag_gen_dac_vol();
+uint8_t Can_gen_dac_vol();
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

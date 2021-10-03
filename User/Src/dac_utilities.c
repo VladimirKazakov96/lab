@@ -2,6 +2,10 @@
 #include "dac.h"
 #include "gpio.h"
 #include "main.h"
+#include "math.h"
+#include "stm32f4xx_it.h"
+
+static void Compose_ref_voltage(uint16_t mv_ampl);
 
 void Set_dac_volt_1st_ch(uint16_t mv){
 	uint32_t dac_value;
@@ -36,6 +40,54 @@ void Increase_dac_volt_by_btn(){
 			push_btn_cntr = 0;
 		}
 
+	}
+}
+
+uint16_t mv_per_sin[50];
+float set_dac_val_time;
+uint16_t kf = 0;
+
+uint32_t dbg_m[100];
+uint8_t i = 0;
+
+uint8_t period_cntr = 0;
+
+uint16_t Get_kf(){
+	return kf;
+}
+
+
+
+void Set_harmonic_signal(uint16_t mv_ampl, uint16_t freq){
+	static uint16_t prev_mv_ampl = 0;
+	static uint16_t prev_freq = 0;
+	if (mv_ampl != prev_mv_ampl){
+		Compose_ref_voltage (mv_ampl);
+		prev_mv_ampl = mv_ampl;
+	}
+	if (freq != prev_freq){
+		kf = round(10000.0/freq)-1;
+		prev_freq = freq;
+	}
+
+	if (Can_gen_dac_vol()){
+		Reset_flag_gen_dac_vol();
+		if (period_cntr != 49){
+			dbg_m[i++] = DWT->CYCCNT/180;
+			//Set_dac_volt_1st_ch(mv_per_sin[period_cntr++]);
+		}else
+			period_cntr = 0;
+	}
+
+
+
+
+
+}
+
+static void Compose_ref_voltage(uint16_t mv_ampl){
+	for (uint8_t i=0; i< 50; i++){
+		mv_per_sin[i] = round(1500 + mv_ampl*sin(6.28/49*i));
 	}
 }
 

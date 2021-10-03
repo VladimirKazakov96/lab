@@ -22,6 +22,7 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 #include "gpio.h"
+#include "dac_utilities.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -44,6 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 extern UART_HandleTypeDef huart1;
+extern TIM_HandleTypeDef htim6;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,14 +72,11 @@ extern UART_HandleTypeDef huart1;
   */
 void NMI_Handler(void)
 {
-  /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
 
-  /* USER CODE END NonMaskableInt_IRQn 0 */
-  /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
   while (1)
   {
   }
-  /* USER CODE END NonMaskableInt_IRQn 1 */
+
 }
 
 /**
@@ -85,13 +84,10 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
-  /* USER CODE BEGIN HardFault_IRQn 0 */
 
-  /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
-    /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-    /* USER CODE END W1_HardFault_IRQn 0 */
+
   }
 }
 
@@ -100,13 +96,10 @@ void HardFault_Handler(void)
   */
 void MemManage_Handler(void)
 {
-  /* USER CODE BEGIN MemoryManagement_IRQn 0 */
 
-  /* USER CODE END MemoryManagement_IRQn 0 */
   while (1)
   {
-    /* USER CODE BEGIN W1_MemoryManagement_IRQn 0 */
-    /* USER CODE END W1_MemoryManagement_IRQn 0 */
+
   }
 }
 
@@ -115,13 +108,10 @@ void MemManage_Handler(void)
   */
 void BusFault_Handler(void)
 {
-  /* USER CODE BEGIN BusFault_IRQn 0 */
 
-  /* USER CODE END BusFault_IRQn 0 */
   while (1)
   {
-    /* USER CODE BEGIN W1_BusFault_IRQn 0 */
-    /* USER CODE END W1_BusFault_IRQn 0 */
+
   }
 }
 
@@ -130,13 +120,9 @@ void BusFault_Handler(void)
   */
 void UsageFault_Handler(void)
 {
-  /* USER CODE BEGIN UsageFault_IRQn 0 */
 
-  /* USER CODE END UsageFault_IRQn 0 */
   while (1)
   {
-    /* USER CODE BEGIN W1_UsageFault_IRQn 0 */
-    /* USER CODE END W1_UsageFault_IRQn 0 */
   }
 }
 
@@ -145,12 +131,6 @@ void UsageFault_Handler(void)
   */
 void SVC_Handler(void)
 {
-  /* USER CODE BEGIN SVCall_IRQn 0 */
-
-  /* USER CODE END SVCall_IRQn 0 */
-  /* USER CODE BEGIN SVCall_IRQn 1 */
-
-  /* USER CODE END SVCall_IRQn 1 */
 }
 
 /**
@@ -158,12 +138,6 @@ void SVC_Handler(void)
   */
 void DebugMon_Handler(void)
 {
-  /* USER CODE BEGIN DebugMonitor_IRQn 0 */
-
-  /* USER CODE END DebugMonitor_IRQn 0 */
-  /* USER CODE BEGIN DebugMonitor_IRQn 1 */
-
-  /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
 /**
@@ -171,58 +145,68 @@ void DebugMon_Handler(void)
   */
 void PendSV_Handler(void)
 {
-  /* USER CODE BEGIN PendSV_IRQn 0 */
 
-  /* USER CODE END PendSV_IRQn 0 */
-  /* USER CODE BEGIN PendSV_IRQn 1 */
-
-  /* USER CODE END PendSV_IRQn 1 */
 }
 
-/**
-  * @brief This function handles System tick timer.
-  */
 
+//uint8_t clear_mas = 0;
 
-uint8_t clear_mas = 0;
+//uint8_t Get_clear_mas_state(){
+//	return clear_mas;
+//}
+//void Set_clear_mas_flag(uint8_t state){
+//	clear_mas = state;
+//}
 
-uint8_t Get_clear_mas_state(){
-	return clear_mas;
-}
-void Set_clear_mas_flag(uint8_t state){
-	clear_mas = state;
-}
 void SysTick_Handler(void)
 {
   static uint16_t ms_cntr = 0;
-  static uint16_t ms_cntr2 = 0;
-  /* USER CODE BEGIN SysTick_IRQn 0 */
-
-  /* USER CODE END SysTick_IRQn 0 */
+  //static uint16_t ms_cntr2 = 0;
   HAL_IncTick();
-  /* USER CODE BEGIN SysTick_IRQn 1 */
   if (ms_cntr++ == 1000){
 	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 	  ms_cntr = 0;
   }
-  if (ms_cntr2++ == 5000){
-	  clear_mas = 1;
-	  ms_cntr2 = 0;
-  }
-
-  /* USER CODE END SysTick_IRQn 1 */
+  //if (ms_cntr2++ == 5000){
+//	  clear_mas = 1;
+//	  ms_cntr2 = 0;
+ // }
 }
 
 void USART1_IRQHandler(void)
 {
-  /* USER CODE BEGIN USART1_IRQn 0 */
-
-  /* USER CODE END USART1_IRQn 0 */
   HAL_UART_IRQHandler(&huart1);
-  /* USER CODE BEGIN USART1_IRQn 1 */
-
-  /* USER CODE END USART1_IRQn 1 */
 }
+
+uint8_t can_gen_dac_vol = 0;
+
+uint8_t Can_gen_dac_vol(){
+	return can_gen_dac_vol;
+}
+
+void Reset_flag_gen_dac_vol(){
+	can_gen_dac_vol = 0;
+}
+
+//uint32_t tick_m[100];
+uint32_t us2_cntr = 0; //2мк счетчик
+
+
+void TIM6_DAC_IRQHandler(void)
+{
+
+  if (Get_kf() == us2_cntr){
+	  can_gen_dac_vol = 1;
+	  us2_cntr = 0;
+  }else
+	  us2_cntr++;
+
+  HAL_TIM_IRQHandler(&htim6);
+
+
+
+}
+
 
 /******************************************************************************/
 /* STM32F4xx Peripheral Interrupt Handlers                                    */
@@ -230,8 +214,4 @@ void USART1_IRQHandler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
-
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

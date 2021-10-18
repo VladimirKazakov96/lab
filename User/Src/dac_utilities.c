@@ -43,7 +43,7 @@ void Increase_dac_volt_by_btn(){
 	}
 }
 
-uint16_t mv_per_sin[50];
+uint16_t mv_per_sin[25];
 float set_dac_val_time;
 uint16_t kf = 0;
 
@@ -66,14 +66,14 @@ void Set_harmonic_signal(uint16_t mv_ampl, uint16_t freq){
 		prev_mv_ampl = mv_ampl;
 	}
 	if (freq != prev_freq){
-		kf = round(10000.0/freq)-1;
+		kf = (2*round(10000.0/freq))-1;
 		prev_freq = freq;
 	}
 
 	if (Can_gen_dac_vol()){
 		Reset_flag_gen_dac_vol();
-		if (period_cntr != 49){
-			dbg_m[i++] = DWT->CYCCNT/180;
+		if (period_cntr != 24){
+			//dbg_m[i++] = DWT->CYCCNT/180;
 			//Set_dac_volt_1st_ch(mv_per_sin[period_cntr++]);
 		}else
 			period_cntr = 0;

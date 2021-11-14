@@ -5,14 +5,15 @@
 #include "math.h"
 #include "stm32f4xx_it.h"
 
+#define CONS_KF 1.250
+
 static void Compose_ref_voltage(uint16_t mv_ampl);
 
 void Set_dac_volt_1st_ch(uint16_t mv){
 	uint32_t dac_value;
 
 	DAC_HandleTypeDef* ptr_hdac = Get_ptr_hdac();
-	dac_value = 4095*mv/3275+15;
-	HAL_DAC_SetValue(ptr_hdac,DAC_CHANNEL_1,DAC_ALIGN_12B_R,dac_value);
+	HAL_DAC_SetValue(ptr_hdac,DAC_CHANNEL_1,DAC_ALIGN_12B_R,mv);
 
 }
 static uint8_t push_btn_cntr = 0;
@@ -66,7 +67,7 @@ void Set_harmonic_signal(uint16_t mv_ampl, uint16_t freq){
 		prev_mv_ampl = mv_ampl;
 	}
 	if (freq != prev_freq){
-		kf = (2*round(10000.0/freq))-1;
+		kf = round(10000.0/freq)-1;
 		prev_freq = freq;
 	}
 
@@ -74,20 +75,16 @@ void Set_harmonic_signal(uint16_t mv_ampl, uint16_t freq){
 		Reset_flag_gen_dac_vol();
 		if (period_cntr != 24){
 			//dbg_m[i++] = DWT->CYCCNT/180;
-			//Set_dac_volt_1st_ch(mv_per_sin[period_cntr++]);
+			Set_dac_volt_1st_ch(mv_per_sin[period_cntr++]);
+			//DAC->CR = mv_per_sin[period_cntr++];
 		}else
 			period_cntr = 0;
 	}
-
-
-
-
-
 }
 
 static void Compose_ref_voltage(uint16_t mv_ampl){
-	for (uint8_t i=0; i< 50; i++){
-		mv_per_sin[i] = round(1500 + mv_ampl*sin(6.28/49*i));
+	for (uint8_t i=0; i< 25; i++){
+		mv_per_sin[i] = (round(1500 + mv_ampl*sin(6.28/24*i))*1.250)+15;
 	}
 }
 

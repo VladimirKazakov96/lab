@@ -41,7 +41,7 @@ int main(void){
   //HAL_TIM_Base_Start(ptr_htim6);
   HAL_TIM_Base_Start_IT(ptr_htim6);
 
-  //HAL_DAC_Start(ptr_hdac, DAC_CHANNEL_1);
+  HAL_DAC_Start(Get_ptr_hdac(), DAC_CHANNEL_1);
   //UART_HandleTypeDef* ptr_huart1 = Get_ptr_huart1();
 
   while (1){
@@ -59,7 +59,7 @@ int main(void){
 		  Set_clear_mas_flag(0);
 	  }
 */
-	  Set_harmonic_signal(1500, 10);
+	  Set_harmonic_signal(500, 5000);
 
 
   }

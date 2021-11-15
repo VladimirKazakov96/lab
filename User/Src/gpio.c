@@ -1,4 +1,5 @@
 #include "gpio.h"
+#include "delay_micros.h"
 
 void MX_GPIO_Init(void)
 {
@@ -23,6 +24,13 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(BTN_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin: */
+  GPIO_InitStruct.Pin = PWM_MEASURE_PIN;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(PWM_MEASURE_PORT, &GPIO_InitStruct);
+  HAL_GPIO_Init(PWM_MEASURE_PORT, &GPIO_InitStruct);
 
 }
 
@@ -66,3 +74,54 @@ GPIO_PinState Get_btn_state(){
 
 	return btn_state;
 }
+
+double duty = 0;
+uint32_t duration_high = 0;
+uint32_t duration_period = 0;
+GPIO_PinState prev_state = GPIO_PIN_RESET;
+void Measure_PWM(){
+	GPIO_PinState cur_state;
+	cur_state = HAL_GPIO_ReadPin(PWM_MEASURE_PORT, PWM_MEASURE_PIN);
+
+	if (prev_state != cur_state){
+		if (cur_state == GPIO_PIN_SET){
+			if (Get_micros() != 0){
+				duration_period = Get_micros();
+				duty = duration_period/duration_high;
+				Reset_DWT_Cntr();
+			}
+			Start_DWT();
+		}else{
+			duration_high = Get_micros();
+		}
+		prev_state = cur_state;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

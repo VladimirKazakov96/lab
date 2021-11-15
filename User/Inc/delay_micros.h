@@ -17,7 +17,7 @@
 __STATIC_INLINE void DWT_Init(void)
 {
 	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // разрешаем использовать счётчик
-	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;   // запускаем счётчик
+	DWT->CYCCNT = 0;
 }
 
 __STATIC_INLINE void delay_us(uint32_t us)
@@ -27,13 +27,20 @@ __STATIC_INLINE void delay_us(uint32_t us)
 	while(DWT->CYCCNT < us_count_tic);
 }
 
-uint8_t is_us_expire (uint32_t us){
-	uint32_t us_count_tic =  us * (SystemCoreClock / 1000000U);
-	if (DWT->CYCCNT >= us_count_tic){
-		DWT->CYCCNT = 0;
-		return 1;
-	}else
-		return 0;
+__STATIC_INLINE void Start_DWT(){
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;   // запускаем счётчик
+}
+
+__STATIC_INLINE void Stop_DWT(){
+	DWT->CTRL &= ~(DWT_CTRL_CYCCNTENA_Msk);   // останавливаем счётчик
+}
+
+__STATIC_INLINE void Reset_DWT_Cntr(){
+	DWT->CYCCNT = 0;
+}
+
+__STATIC_INLINE uint32_t Get_micros(){
+	return DWT->CYCCNT;
 }
 
 

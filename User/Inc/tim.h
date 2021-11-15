@@ -12,5 +12,7 @@
 
 TIM_HandleTypeDef* Get_ptr_htim6();
 void MX_TIM6_Init(void);
+TIM_HandleTypeDef* Get_ptr_htim4();
+void MX_TIM4_Init(void);
 
 #endif /* __TIM_H */
